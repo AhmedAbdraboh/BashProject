@@ -4,7 +4,7 @@
 
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter Choice Number: '
-namesTables='Create-Table Show-Tables Quit';
+namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Quit';
 select name in $names
 do
      case $name in
@@ -27,6 +27,18 @@ do
                       ;;
                     'Show-Tables')
                       showTables
+                      ;;
+                    'Select-from-Table')
+                      selectFromTable
+                      ;;
+                    'Update-Table')
+                      updateTable
+                      ;;
+                    'Delete-from-Table')
+                      deleteTable
+                      ;;
+                    'Drop-Table')
+                      dropTable
                       ;;
                     'Quit')
                       cd ../
@@ -84,4 +96,16 @@ function createTable(){
   printf "Enter Table Name: "
   read tableName
   touch $tableName
+}
+function selectFromTable(){
+
+}
+function updateTable(){
+
+}
+function deleteTable(){
+
+}
+function dropTable(){
+
 }
