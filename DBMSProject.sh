@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#************************** database management ******************************** 
+#************************** database management ********************************
 function createDB(){
  	printf "Enter Database Name: "
 	read dbName
@@ -20,9 +20,25 @@ function removeDB(){
      read dbName
      rm -r $dbName
 }
-
-names='Create-Database Rename-Database Drop-Database Quit'
+function showDB() {
+  ls -d */;
+}
+function useDB(){
+  printf "Enter Database Name: "
+  read dbName
+  cd $dbName
+}
+function showTables(){
+  ls -p | grep -v /
+}
+function createTable(){
+  printf "Enter Table Name: "
+  read tableName
+  touch $tableName
+}
+names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter Choice Number: '
+namesTables='Create-Table Show-Tables Quit';
 select name in $names
 do
      case $name in
@@ -34,7 +50,31 @@ do
                ;;
           'Drop-Database')
                removeDB
-               ;; 
+               ;;
+          'Use-Database')
+                useDB
+                select nameTable in $namesTables
+                do
+                  case $nameTable in
+                    'Create-Table')
+                      createTable
+                      ;;
+                    'Show-Tables')
+                      showTables
+                      ;;
+                    'Quit')
+                      cd ../
+                      break
+                      ;;
+                  *)
+                       echo "incorrect choice... plz, choose again"
+                     ;;
+                  esac
+                done
+              ;;
+          'Show-Databases')
+               showDB
+               ;;
           'Quit')
                break
                ;;
