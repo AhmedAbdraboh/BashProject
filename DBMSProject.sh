@@ -8,18 +8,18 @@ function createDB(){
 	mkdir $dbName
 }
 
-function removeDB(){
-	printf "Enter Database Name: "
-	read dbName
-	rm -r $dbName
-}
-
 function renameDB(){
 	printf "Enter Old Name: "
 	read dbName
 	printf "Enter New Name: "
 	read dbNewName
 	mv  $dbName $dbNewName
+}
+
+function removeDB(){
+     printf "Enter Database Name: "
+     read dbName
+     rm -r $dbName
 }
 
 printf "1- Create Database\n2- Rename Database \n3- Drop Database\n"
@@ -31,10 +31,10 @@ case $choice in
            createDB
           ;;
      2)
-          removeDB
+          renameDB
           ;;
      3)
-          renameDB
+          removeDB
           ;; 
      *)
           echo "incorrect choice... plz, choose again"
