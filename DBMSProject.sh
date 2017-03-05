@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#************************** Choose Command ******************************** 
-
+#************************** database management ******************************** 
 function createDB(){
  	printf "Enter Database Name: "
 	read dbName
@@ -22,21 +21,25 @@ function removeDB(){
      rm -r $dbName
 }
 
-printf "1- Create Database\n2- Rename Database \n3- Drop Database\n"
-printf 'Enter Your Choice Number: '
-read choice
-
-case $choice in
-     1)
-           createDB
-          ;;
-     2)
-          renameDB
-          ;;
-     3)
-          removeDB
-          ;; 
-     *)
-          echo "incorrect choice... plz, choose again"
-          ;;
-esac
+names='Create-Database Rename-Database Drop-Database Quit'
+PS3='Enter Choice Number: '
+select name in $names
+do
+     case $name in
+          'Create-Database')
+               createDB
+               ;;
+          'Rename-Database')
+               renameDB
+               ;;
+          'Drop-Database')
+               removeDB
+               ;; 
+          'Quit')
+               break
+               ;;
+          *)
+               echo "incorrect choice... plz, choose again"
+               ;;
+     esac
+done
