@@ -149,12 +149,27 @@ function selectWithCond(){
   read colNum
   awk '$2 == "shimaa" {print $$colNum }' $tableName
 }
+function getFieldNumber(){
+  columnName=$1
+  tableNameToLook=$2
 
+  columnNumber=$(awk -v var=${columnName} 'BEGIN{FS=":";}{if(NR==1){
+                for(i=1;i<=NF;i++){
+                  if($i~ var)
+                    print i
+                }
+              }
+            }' $tableNameToLook)
+  echo $columnNumber
+
+
+}
 #************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Quit';
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
+getFieldNumber email text123
 
 select name in $names
 do
@@ -177,6 +192,7 @@ do
                       createTable
                       ;;
                     'Show-Tables')
+
                       showTables
                       ;;
                     'Select-from-Table')
@@ -184,7 +200,7 @@ do
                       do
                         case $selectTable in
                           'Select-All-Columns')
-                            selectAll  
+                            selectAll
                             ;;
                           'Select-specific-Columns')
                             selectSpecificCol
@@ -196,6 +212,7 @@ do
                             ;;
                           'Quit')
                             cd ../
+
                             break
                             ;;
                           *)
@@ -205,16 +222,17 @@ do
                       done
                       ;;
                     'Update-Table')
-                      
+
                       ;;
                     'Delete-from-Table')
-                      
+
                       ;;
                     'Drop-Table')
                       dropTable
                       ;;
                     'Quit')
                       cd ../
+
                       break
                       ;;
                   *)
