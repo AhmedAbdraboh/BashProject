@@ -78,10 +78,84 @@ function createTable(){
 # }
 
 #************************** database management ********************************
+function createDB(){
+  printf "Enter Database Name: "
+  read dbName
+  mkdir $dbName
+}
 
+function renameDB(){
+  printf "Enter Old Name: "
+  read dbName
+  printf "Enter New Name: "
+  read dbNewName
+  mv  $dbName $dbNewName
+}
+
+function removeDB(){
+     printf "Enter Database Name: "
+     read dbName
+     rm -r $dbName
+}
+function showDB() {
+  ls -d */;
+}
+function useDB(){
+  printf "Enter Database Name: "
+  read dbName
+  cd $dbName
+}
+
+#************************** Tables management ********************************
+function showTables(){
+  ls -p | grep -v /
+}
+function createTable(){
+  printf "Enter Table Name: "
+  read tableName
+  touch $tableName
+}
+# function updateTable(){
+
+# }
+# function deleteTable(){
+
+# }
+function dropTable(){
+  printf "Enter Table Name: "
+  read tableName
+  rm $tableName
+}
+
+#************************** Select management ********************************
+function selectAll(){
+  printf "Enter Table Name: "
+  read tableName
+  awk -F: '{if(NR>1 && NR<16) print $0}' $tableName
+}
+
+function selectSpecificCol(){
+  printf "Enter Table Name: "
+  read tableName
+  printf "Enter Column Number: "
+  read colNum
+  awk '{ print $$colNum }' $tableName
+}
+
+function selectWithCond(){
+  printf "Enter Table Name: "
+  read tableName
+  printf "Enter Column Number: "
+  read colNum
+  awk '$2 == "shimaa" {print $$colNum }' $tableName
+}
+
+#************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
-PS3='Enter Choice Number: '
+PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Quit';
+selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
+
 select name in $names
 do
      case $name in
@@ -106,13 +180,35 @@ do
                       showTables
                       ;;
                     'Select-from-Table')
-                      selectFromTable
+                      select selectTable in $selectTables
+                      do
+                        case $selectTable in
+                          'Select-All-Columns')
+                            selectAll  
+                            ;;
+                          'Select-specific-Columns')
+                            selectSpecificCol
+                            ;;
+                          'Select-with-Condition')
+                            selectWithCond
+                            ;;
+                          'Aggregate-Function')
+                            ;;
+                          'Quit')
+                            cd ../
+                            break
+                            ;;
+                          *)
+                            echo "incorrect choice... plz, choose again"
+                            ;;
+                        esac
+                      done
                       ;;
                     'Update-Table')
-                      updateTable
+                      
                       ;;
                     'Delete-from-Table')
-                      deleteTable
+                      
                       ;;
                     'Drop-Table')
                       dropTable
