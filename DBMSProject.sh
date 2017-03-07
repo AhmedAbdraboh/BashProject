@@ -58,15 +58,35 @@ function createTable(){
 
   for (( i = 0; i < $numberOfColumns; i++ )); do
     if [[ i -eq numberOfColumns-1 ]]; then
-      echo -n ${names[$i]}-${types[$i]}>>$tableName
+      echo ${names[$i]}-${types[$i]}>>$tableName
     else
       echo -n ${names[$i]}-${types[$i]}:>>$tableName
     fi
   done
 }
-# function selectFromTable(){
-#
-# }
+function insertIntoTable(){
+  declare -a values
+  printf "Enter Table Name: "
+  read tableName
+  numberOfColumnsss=$(awk -F: '{if(NR==1)print NF}' $tableName)
+  # echo $numberOfColumnsss
+  for (( i = 1; i <= $numberOfColumnsss; i++ ));
+  do
+    fieldName=$(awk -F: -v var=${i} '{if(NR==1)print $var}' $tableName)
+    # echo $fieldName
+    printf "Enter Value of $fieldName  "
+    read values[$i-1]
+  done
+
+  for (( i = 0; i < $numberOfColumnsss; i++ ));
+  do
+    if [[ i -eq numberOfColumns-1 ]]; then
+      echo ${values[$i]}>>$tableName
+    else
+      echo -n ${values[$i]}:>>$tableName
+    fi
+  done
+}
 # function updateTable(){
 #
 # }
@@ -110,11 +130,11 @@ function useDB(){
 function showTables(){
   ls -p | grep -v /
 }
-function createTable(){
-  printf "Enter Table Name: "
-  read tableName
-  touch $tableName
-}
+# function createTable(){
+#   printf "Enter Table Name: "
+#   read tableName
+#   touch $tableName
+# }
 # function updateTable(){
 
 # }
@@ -167,9 +187,11 @@ function getFieldNumber(){
 #************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
-namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Quit';
+namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
-getFieldNumber email text123
+# getFieldNumber email text123
+# createTable
+
 
 select name in $names
 do
@@ -229,6 +251,9 @@ do
                       ;;
                     'Drop-Table')
                       dropTable
+                      ;;
+                    'Insert-Into-Table')
+                      insertIntoTable
                       ;;
                     'Quit')
                       cd ../
