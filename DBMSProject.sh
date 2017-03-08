@@ -75,14 +75,24 @@ function insertIntoTable(){
   declare -a values
   printf "Enter Table Name: "
   read tableName
+
   numberOfColumnsss=$(awk -F: '{if(NR==1)print NF}' $tableName)
-  # echo $numberOfColumnsss
+
   for (( i = 1; i <= $numberOfColumnsss; i++ ));
   do
     fieldName=$(awk -F: -v var=${i} '{if(NR==1)print $var}' $tableName)
-    # echo $fieldName
-    printf "Enter Value of $fieldName  "
-    read values[$i-1]
+    dataTypeOfField=$(echo $fieldName | cut -d'-' -f2)
+    while true
+    do
+      printf "Enter Value of $fieldName  "
+      read values[$i-1]
+      resultCheckDataType=$(checkDataType $dataTypeOfField ${values[$i-1]})
+      if [[ $resultCheckDataType == 'success' ]]; then
+        break
+      else
+        echo "Error Input Enter correct Data Type"
+      fi
+    done
   done
 
   for (( i = 0; i < $numberOfColumnsss; i++ ));
@@ -113,10 +123,50 @@ function updateTable(){
   sed -i 's/'$oldValue'/'$newValue'/' $tableName
 
 }
-# function deleteTable(){
-#
-# }
+function deleteTable(){
+  printf "Enter Name of table to delete from: "
+  read tableName
+  printf "Enter identifier: "
+  read identifier
+  printf "Enter identifierValue: "
+  read identifierValue
+  columnNumberOfIdentifier=$(getFieldNumber $identifier $tableName)
+  echo $columnNumberOfIdentifier
+  rowNumber=$(awk -F':' '{if($'$columnNumberOfIdentifier' == "'$identifierValue'") print NR }' $tableName)
+  echo $rowNumber
+  sed -i ''$rowNumber'd' $tableName
+}
+function checkDataType(){
+  dataType=$1
+  # echo $dataType
+  value=$2
+  # echo $value
+  re='^[0-9]+$'
+  reString='^[a-zA-Z]+$'
+  # echo "inside fun"
+  if [[ $dataType == 'int' ]]; then
+    # echo "inside int check"
+    if ! [[ $value =~ $re ]]; then
+      echo "error"
+      exit
+    else
+      echo "success"
+      exit
+    fi
+  fi
+  if [[ $dataType == 'string' ]]; then
+    # echo "inside string check"
 
+    if ! [[ $value =~ $reString ]]; then
+      echo "error"
+      exit
+    else
+      echo "success"
+      exit
+    fi
+  fi
+  # echo "error"
+}
 #************************** Select management ********************************
 function selectAll(){
   printf "Enter Table Name: "
@@ -227,7 +277,8 @@ selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition A
 # createTable
 # insertIntoTable
 # updateTable
-
+# deleteTable
+# echo $(check string as2)
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
 
 
