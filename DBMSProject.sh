@@ -122,7 +122,7 @@ function selectAll(){
   printf "Enter Table Name: "
   read tableName
 
-  awk -F':' '{if(NR>1) {for(i=1;i<=(NR);i++) print $i}}' $tableName
+  awk -F':' '{if(NR>1) print $0 }' $tableName
 
 }
 
@@ -132,13 +132,7 @@ function selectSpecificCol(){
   printf "Enter Column Name: "
   read colName
 
-  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
-                for(i=1;i<=NF;i++){
-                  if($i~ var)
-                    print i
-                }
-              }
-            }' $tableName)
+  columnNumber=$(getFieldNumber $colName $tableName)
   awk -F':' '{if(NR>1) print $'$columnNumber'}' $tableName
 
 }
@@ -150,17 +144,10 @@ function selectWithCond(){
   printf "Enter Column Name: "
   read colName
 
-  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
-                for(i=1;i<=NF;i++){
-                  if($i~ var)
-                    print i
-                }
-              }
-            }' $tableName)
-
+  columnNumber=$(getFieldNumber $colName $tableName)
   printf "Enter field to select data: "
   read condition
-  awk -F':' '{if($'$columnNumber'== "'$condition'") for(i=1;i<=(NR);i++) print $i }' $tableName
+  awk -F':' '{if($'$columnNumber'== "'$condition'") print $0 }' $tableName
 }
 
 function sumCol(){
@@ -169,13 +156,7 @@ function sumCol(){
   printf "Enter Column Name: "
   read colName
 
-  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
-                for(i=1;i<=NF;i++){
-                  if($i~ var)
-                    print i
-                }
-              }
-            }' $tableName)
+  columnNumber=$(getFieldNumber $colName $tableName)
   awk -F':' '{if(NR>2) sum+=$'$columnNumber'; } END{print "sum=",sum}' $tableName
 }
 
@@ -191,13 +172,7 @@ function averageCol(){
   printf "Enter Column Name: "
   read colName
 
-  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
-                for(i=1;i<=NF;i++){
-                  if($i~ var)
-                    print i
-                }
-              }
-            }' $tableName)
+  columnNumber=$(getFieldNumber $colName $tableName)
   awk -F':' '{sum+=$'$columnNumber'; if(NR>2) count++} END{print "average=",sum/count}' $tableName
 }
 function getFieldNumber(){
@@ -222,11 +197,6 @@ PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
 
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
-# x=$(getFieldNumber email asd)
-# echo $x
-# createTable
-# insertIntoTable
-# updateTable
 
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
 
