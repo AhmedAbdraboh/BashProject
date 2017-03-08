@@ -26,8 +26,15 @@ function useDB(){
   read dbName
   cd $dbName
 }
+
+#************************** Tables management ********************************
 function showTables(){
   ls -p | grep -v /
+}
+function dropTable(){
+  printf "Enter Table Name: "
+  read tableName
+  rm $tableName
 }
 function createTable(){
   declare -a names
@@ -110,85 +117,94 @@ function updateTable(){
 # function deleteTable(){
 #
 # }
-# function dropTable(){
-#
-# }
-
-#************************** database management ********************************
-function createDB(){
-  printf "Enter Database Name: "
-  read dbName
-  mkdir $dbName
-}
-
-function renameDB(){
-  printf "Enter Old Name: "
-  read dbName
-  printf "Enter New Name: "
-  read dbNewName
-  mv  $dbName $dbNewName
-}
-
-function removeDB(){
-     printf "Enter Database Name: "
-     read dbName
-     rm -r $dbName
-}
-function showDB() {
-  ls -d */;
-}
-function useDB(){
-  printf "Enter Database Name: "
-  read dbName
-  cd $dbName
-}
-
-#************************** Tables management ********************************
-function showTables(){
-  ls -p | grep -v /
-}
-# function createTable(){
-#   printf "Enter Table Name: "
-#   read tableName
-#   touch $tableName
-# }
-# function updateTable(){
-
-# }
-# function deleteTable(){
-
-# }
-function dropTable(){
-  printf "Enter Table Name: "
-  read tableName
-  rm $tableName
-}
 
 #************************** Select management ********************************
 function selectAll(){
   printf "Enter Table Name: "
   read tableName
-  awk -F: '{if(NR>1 && NR<16) print $0}' $tableName
+
+  awk -F':' '{if(NR>1) {for(i=1;i<=(NR);i++) print $i}}' $tableName
+
 }
 
 function selectSpecificCol(){
   printf "Enter Table Name: "
   read tableName
-  printf "Enter Column Number: "
-  read colNum
-  awk '{ print $$colNum }' $tableName
+  printf "Enter Column Name: "
+  read colName
+
+  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
+                for(i=1;i<=NF;i++){
+                  if($i~ var)
+                    print i
+                }
+              }
+            }' $tableName)
+  awk -F':' '{if(NR>1) print $'$columnNumber'}' $tableName
+
 }
+
 
 function selectWithCond(){
   printf "Enter Table Name: "
   read tableName
-  printf "Enter Column Number: "
-  read colNum
-  awk '$2 == "shimaa" {print $$colNum }' $tableName
+  printf "Enter Column Name: "
+  read colName
+
+  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
+                for(i=1;i<=NF;i++){
+                  if($i~ var)
+                    print i
+                }
+              }
+            }' $tableName)
+  
+  printf "Enter field to select data: "
+  read condition
+  awk -F':' '{if($'$columnNumber'== "'$condition'") for(i=1;i<=(NR);i++) print $i }' $tableName
+}
+
+function sumCol(){
+  printf "Enter Table Name: "
+  read tableName
+  printf "Enter Column Name: "
+  read colName
+
+  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
+                for(i=1;i<=NF;i++){
+                  if($i~ var)
+                    print i
+                }
+              }
+            }' $tableName)
+  awk -F':' '{if(NR>2) sum+=$'$columnNumber'; } END{print "sum=",sum}' $tableName
+}
+
+function countRows(){
+  printf "Enter Table Name:  "
+  read tableName
+  awk '{if(NR>2) count++} END {print "count= ",count}' $tableName
+}
+
+function averageCol(){
+  printf "Enter Table Name: "
+  read tableName
+  printf "Enter Column Name: "
+  read colName
+
+  columnNumber=$(awk -v var=${colName} 'BEGIN{FS=":";}{if(NR==1){
+                for(i=1;i<=NF;i++){
+                  if($i~ var)
+                    print i
+                }
+              }
+            }' $tableName)
+  awk -F':' '{sum+=$'$columnNumber'; if(NR>2) count++} END{print "average=",sum/count}' $tableName
 }
 function getFieldNumber(){
   columnName=$1
   tableNameToLook=$2
+
 
   columnNumber=$(awk -v var=${columnName} 'BEGIN{FS=":";}{if(NR==1){
                 for(i=1;i<=NF;i++){
@@ -198,19 +214,24 @@ function getFieldNumber(){
               }
             }' $tableNameToLook)
   echo $columnNumber
-
-
 }
+
+
 #************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
+<<<<<<< HEAD
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
 # x=$(getFieldNumber email asd)
 # echo $x
 # createTable
 # insertIntoTable
 updateTable
+=======
+selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
+
+>>>>>>> 354a4d86ab1e9af488ce1ca6c254c1ab0d1887e9
 select name in $names
 do
      case $name in
@@ -248,7 +269,14 @@ do
                           'Select-with-Condition')
                             selectWithCond
                             ;;
-                          'Aggregate-Function')
+                          'Sum')
+                            sumCol
+                            ;;
+                          'Count')
+                            countRows
+                            ;;
+                          'Average')
+                            averageCol
                             ;;
                           'Quit')
                             cd ../
@@ -295,3 +323,6 @@ do
                ;;
      esac
 done
+
+
+
