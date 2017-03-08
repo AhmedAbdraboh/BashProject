@@ -110,7 +110,6 @@ function selectAll(){
 
 }
 
-<<<<<<< .mine
 function selectSpecificCol(){
   printf "Enter Table Name: "
   read tableName
@@ -127,27 +126,7 @@ function selectSpecificCol(){
   awk -F':' '{if(NR>1) print $'$columnNumber'}' $tableName
 
 }
-||||||| .r14
-#************************** Tables management ********************************
-function showTables(){
-  ls -p | grep -v /
-}
-function createTable(){
-  printf "Enter Table Name: "
-  read tableName
-  touch $tableName
-}
-=======
-#************************** Tables management ********************************
-function showTables(){
-  ls -p | grep -v /
-}
-# function createTable(){
-#   printf "Enter Table Name: "
-#   read tableName
-#   touch $tableName
-# }
->>>>>>> .r16
+
 
 function selectWithCond(){
   printf "Enter Table Name: "
@@ -209,7 +188,7 @@ function getFieldNumber(){
   columnName=$1
   tableNameToLook=$2
 
-<<<<<<< .mine
+
   columnNumber=$(awk -v var=${columnName} 'BEGIN{FS=":";}{if(NR==1){
                 for(i=1;i<=NF;i++){
                   if($i~ var)
@@ -219,29 +198,13 @@ function getFieldNumber(){
             }' $tableNameToLook)
   echo $columnNumber
 }
-||||||| .r14
-=======
-  columnNumber=$(awk -v var=${columnName} 'BEGIN{FS=":";}{if(NR==1){
-                for(i=1;i<=NF;i++){
-                  if($i~ var)
-                    print i
-                }
-              }
-            }' $tableNameToLook)
-  echo $columnNumber
 
 
-}
->>>>>>> .r16
 #************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
-# getFieldNumber email text123
-# getFieldNumber email text123
-# createTable
-
 
 select name in $names
 do
@@ -334,4 +297,6 @@ do
                ;;
      esac
 done
+
+
 
