@@ -108,11 +108,10 @@ function updateTable(){
 
   columnNumberOfIdentifier=$(getFieldNumber $identifier $tableName)
   columnNumberOfChange=$(getFieldNumber $columnToChange $tableName)
-  echo $columnNumberOfIdentifier
-  echo $columnNumberOfChange
-  oldValue=$(awk -v columnNumberOfIdentifier=${columnNumberOfIdentifier} -v columnNumberOfChange=${columnNumberOfChange} -v identifierValue=${identifierValue}
-  'BEGIN{FS=":";}{if($columnNumberOfIdentifier==$identifierValue)print $columnNumberOfChange}' $tableName)
-  echo $oldValue
+
+  oldValue=$(awk -F: '{if($'$columnNumberOfIdentifier'=='$identifierValue')print $'$columnNumberOfChange'}' $tableName)
+  sed -i 's/'$oldValue'/'$newValue'/' $tableName
+
 }
 # function deleteTable(){
 #
@@ -158,7 +157,7 @@ function selectWithCond(){
                 }
               }
             }' $tableName)
-  
+
   printf "Enter field to select data: "
   read condition
   awk -F':' '{if($'$columnNumber'== "'$condition'") for(i=1;i<=(NR);i++) print $i }' $tableName
@@ -221,17 +220,17 @@ function getFieldNumber(){
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
-<<<<<<< HEAD
+
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
 # x=$(getFieldNumber email asd)
 # echo $x
 # createTable
 # insertIntoTable
-updateTable
-=======
+# updateTable
+
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
 
->>>>>>> 354a4d86ab1e9af488ce1ca6c254c1ab0d1887e9
+
 select name in $names
 do
      case $name in
@@ -290,7 +289,7 @@ do
                       done
                       ;;
                     'Update-Table')
-
+                      updateTable
                       ;;
                     'Delete-from-Table')
 
@@ -323,6 +322,3 @@ do
                ;;
      esac
 done
-
-
-
