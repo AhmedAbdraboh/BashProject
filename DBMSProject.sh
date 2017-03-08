@@ -87,9 +87,26 @@ function insertIntoTable(){
     fi
   done
 }
-# function updateTable(){
-#
-# }
+function updateTable(){
+  printf "Enter Table To update: "
+  read tableName
+  printf "Enter identifier: "
+  read identifier
+  printf "Enter value of identifier: "
+  read identifierValue
+  printf "Enter column to change: "
+  read columnToChange
+  printf "Enter new value: "
+  read newValue
+
+  columnNumberOfIdentifier=$(getFieldNumber $identifier $tableName)
+  columnNumberOfChange=$(getFieldNumber $columnToChange $tableName)
+  echo $columnNumberOfIdentifier
+  echo $columnNumberOfChange
+  oldValue=$(awk -v columnNumberOfIdentifier=${columnNumberOfIdentifier} -v columnNumberOfChange=${columnNumberOfChange} -v identifierValue=${identifierValue}
+  'BEGIN{FS=":";}{if($columnNumberOfIdentifier==$identifierValue)print $columnNumberOfChange}' $tableName)
+  echo $oldValue
+}
 # function deleteTable(){
 #
 # }
@@ -189,10 +206,11 @@ names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
-# getFieldNumber email text123
+# x=$(getFieldNumber email asd)
+# echo $x
 # createTable
-
-
+# insertIntoTable
+updateTable
 select name in $names
 do
      case $name in
