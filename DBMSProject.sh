@@ -288,8 +288,8 @@ isValidPrimaryKey()
 #************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
-namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
-selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
+namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Back';
+selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Back'
 
 
 function selectMenu()
@@ -315,7 +315,7 @@ function selectMenu()
         'Average')
           averageCol
           ;;
-        'Quit')
+        'Back')
           cd ../
           clear
           useFun
@@ -356,7 +356,7 @@ function useFun()
         'Insert-Into-Table')
           insertIntoTable
           ;;
-        'Quit')
+        'Back')
           cd ../
           clear
           mainMenu
@@ -400,3 +400,5 @@ function mainMenu()
     esac
   done
 }
+
+mainMenu
