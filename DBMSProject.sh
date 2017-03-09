@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#************************** Database management *******************************
 function createDB(){
  	printf "Enter Database Name: "
 	read dbName
@@ -103,15 +105,19 @@ function insertIntoTable(){
       printf "Enter Value of $fieldName  "
       read values[$i-1]
 
-      while true
-      do
         if [[ $i == 1 ]]; then
+          while true
+          do
           isValidPK=$(isValidPrimaryKey $values $tableName)
           if [[ $isValidPK == 'error' ]]; then
-            printf "Invalid data, Enter again"
+            printf "Invalid data, Enter again\n"
+            printf "Enter Value of $fieldName  "
+            read values[$i-1]
+            break
           fi
+          break
+          done
         fi
-      done
 
       resultCheckDataType=$(checkDataType $dataTypeOfField ${values[$i-1]})
       if [[ $resultCheckDataType == 'success' ]]; then
@@ -222,7 +228,7 @@ function averageCol(){
   awk -F':' '{sum+=$'$columnNumber'; if(NR>2) count++} END{print "average=",sum/count}' $tableName
 }
 
-#*********************************************************************************
+#************************** Helpfull Functions *******************************
 function getFieldNumber(){
   columnName=$1
   tableNameToLook=$2
