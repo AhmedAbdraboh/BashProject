@@ -39,6 +39,9 @@ function dropTable(){
 function createTable(){
   declare -a names
   declare -a types
+  declare flag=1
+  declare PrimaryCol
+  # declare columnNumber
   choices='integer string'
   printf "Enter Table Name: "
   read tableName
@@ -60,14 +63,27 @@ function createTable(){
         echo 'wrong input'
       fi
     done
+
+
+    if [ $flag == 1 ]; then
+      printf "Make column as Primary Key[y/n] "
+      read isPrimary
+      if [[ $isPrimary == 'y' ]]; then
+        declare flag=0
+        columnNumberOfPrimaryKey=$i
+      fi
+    fi
+
   done
   touch $tableName
-
+  echo -n ${names[$columnNumberOfPrimaryKey]}-${types[$columnNumberOfPrimaryKey]}:>>$tableName
   for (( i = 0; i < $numberOfColumns; i++ )); do
-    if [[ i -eq numberOfColumns-1 ]]; then
-      echo ${names[$i]}-${types[$i]}>>$tableName
-    else
-      echo -n ${names[$i]}-${types[$i]}:>>$tableName
+    if [[ i -ne columnNumberOfPrimaryKey ]]; then
+      if [[ i -eq numberOfColumns-1 ]]; then
+        echo ${names[$i]}-${types[$i]}>>$tableName
+      else
+        echo -n ${names[$i]}-${types[$i]}:>>$tableName
+      fi
     fi
   done
 }
@@ -86,6 +102,15 @@ function insertIntoTable(){
     do
       printf "Enter Value of $fieldName  "
       read values[$i-1]
+
+        if [[ $i == 1 ]]; then
+          isValidPK=$(isValidPrimaryKey $values $tableName)
+          if [[ $isValidPK == 'error' ]]; then
+            printf "Invalid data, Enter again"
+          fi
+        fi
+
+
       resultCheckDataType=$(checkDataType $dataTypeOfField ${values[$i-1]})
       if [[ $resultCheckDataType == 'success' ]]; then
         break
@@ -114,7 +139,7 @@ function updateTable(){
   printf "Enter column to change: "
   read columnToChange
   printf "Enter new value: "
-  read newValue
+  read newValue 
 
   columnNumberOfIdentifier=$(getFieldNumber $identifier $tableName)
   columnNumberOfChange=$(getFieldNumber $columnToChange $tableName)
@@ -136,43 +161,12 @@ function deleteTable(){
   echo $rowNumber
   sed -i ''$rowNumber'd' $tableName
 }
-function checkDataType(){
-  dataType=$1
-  # echo $dataType
-  value=$2
-  # echo $value
-  re='^[0-9]+$'
-  reString='^[a-zA-Z]+$'
-  # echo "inside fun"
-  if [[ $dataType == 'int' ]]; then
-    # echo "inside int check"
-    if ! [[ $value =~ $re ]]; then
-      echo "error"
-      exit
-    else
-      echo "success"
-      exit
-    fi
-  fi
-  if [[ $dataType == 'string' ]]; then
-    # echo "inside string check"
-
-    if ! [[ $value =~ $reString ]]; then
-      echo "error"
-      exit
-    else
-      echo "success"
-      exit
-    fi
-  fi
-  # echo "error"
-}
 #************************** Select management ********************************
 function selectAll(){
   printf "Enter Table Name: "
   read tableName
 
-  awk -F':' '{if(NR>1) print $0 }' $tableName
+  awk -F':'  '{if(NR>1) print $0 }' $tableName
 
 }
 
@@ -225,6 +219,8 @@ function averageCol(){
   columnNumber=$(getFieldNumber $colName $tableName)
   awk -F':' '{sum+=$'$columnNumber'; if(NR>2) count++} END{print "average=",sum/count}' $tableName
 }
+
+#*********************************************************************************
 function getFieldNumber(){
   columnName=$1
   tableNameToLook=$2
@@ -240,14 +236,60 @@ function getFieldNumber(){
   echo $columnNumber
 }
 
+function checkDataType(){
+  dataType=$1
+  # echo $dataType
+  value=$2
+  # echo $value
+  re='^[0-9]+$'
+  reString='^[a-zA-Z]+$'
+  # echo "inside fun"
+  if [[ $dataType == 'int' ]]; then
+    # echo "inside int check"
+    if ! [[ $value =~ $re ]]; then
+      echo "error"
+      exit
+    else
+      echo "success"
+      exit
+    fi
+  fi
+  if [[ $dataType == 'string' ]]; then
+    # echo "inside string check"
+
+    if ! [[ $value =~ $reString ]]; then
+      echo "error"
+      exit
+    else
+      echo "success"
+      exit
+    fi
+  fi
+  # echo "error"
+}
+
+isValidPrimaryKey()
+{
+  primaryValue=$1
+  tableName=$2
+
+  while read line
+  do
+    result=$( echo $line | cut -d ':' -f1 );
+    if [[ $result == $primaryValue ]]; then
+      echo "error"
+      exit
+    fi
+  done <$tableName
+}
 
 #************************** Menue management ********************************
 names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases Quit'
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
+selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
+# selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
 
-selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
-<<<<<<< HEAD
 # x=$(getFieldNumber email asd)
 # echo $x
 # createTable
@@ -255,10 +297,25 @@ selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition A
 # updateTable
 # deleteTable
 # echo $(check string as2)
-=======
+# awk 'x[$1]++ == 1 { print " duplicated"}' db1/tbl1
+# awk 'x[$1]++ == 0 { print  " is not duplicated"}' db1/tbl1
 
->>>>>>> 71794b40081a8f2e4906f8bb4d3f1f8f9e71f5f2
-selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
+# awk -F':'  '{if(NR>2) printf $1 }' db1/tbl1
+# for i in $(awk -F':'  '{if(NR>2) printf $1 }' db1/tbl1); do
+# echo $i
+# done
+
+# while read server; do
+#   printf server
+# done < db1/tbl1
+
+# awk -F':' '{ a[$1]++ } END { for (b in a) {if(b == 3) print "duplicated" } }' db1/tbl1
+
+# grep "id" | cut -d':' -f1 db1/tbl1
+
+# awk -F':' '$1=="1" {print $2,$3}' db1/tbl1
+# grep 1 db1/tbl1 | cut -d':' -f1
+  
 
 
 select name in $names
