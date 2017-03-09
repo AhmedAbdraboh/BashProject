@@ -103,13 +103,15 @@ function insertIntoTable(){
       printf "Enter Value of $fieldName  "
       read values[$i-1]
 
+      while true
+      do
         if [[ $i == 1 ]]; then
           isValidPK=$(isValidPrimaryKey $values $tableName)
           if [[ $isValidPK == 'error' ]]; then
             printf "Invalid data, Enter again"
           fi
         fi
-
+      done
 
       resultCheckDataType=$(checkDataType $dataTypeOfField ${values[$i-1]})
       if [[ $resultCheckDataType == 'success' ]]; then
@@ -288,124 +290,113 @@ names='Create-Database Rename-Database Drop-Database Use-Database Show-Databases
 PS3='Enter option Number: '
 namesTables='Create-Table Show-Tables Select-from-Table Update-Table Delete-from-Table Drop-Table Insert-Into-Table Quit';
 selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Sum Count Average Quit'
-# selectTables='Select-All-Columns Select-specific-Columns Select-with-Condition Aggregate-Function Quit'
-
-# x=$(getFieldNumber email asd)
-# echo $x
-# createTable
-# insertIntoTable
-# updateTable
-# deleteTable
-# echo $(check string as2)
-# awk 'x[$1]++ == 1 { print " duplicated"}' db1/tbl1
-# awk 'x[$1]++ == 0 { print  " is not duplicated"}' db1/tbl1
-
-# awk -F':'  '{if(NR>2) printf $1 }' db1/tbl1
-# for i in $(awk -F':'  '{if(NR>2) printf $1 }' db1/tbl1); do
-# echo $i
-# done
-
-# while read server; do
-#   printf server
-# done < db1/tbl1
-
-# awk -F':' '{ a[$1]++ } END { for (b in a) {if(b == 3) print "duplicated" } }' db1/tbl1
-
-# grep "id" | cut -d':' -f1 db1/tbl1
-
-# awk -F':' '$1=="1" {print $2,$3}' db1/tbl1
-# grep 1 db1/tbl1 | cut -d':' -f1
-  
 
 
-select name in $names
-do
-     case $name in
-          'Create-Database')
-               createDB
-               ;;
-          'Rename-Database')
-               renameDB
-               ;;
-          'Drop-Database')
-               removeDB
-               ;;
-          'Use-Database')
-                useDB
-                select nameTable in $namesTables
-                do
-                  case $nameTable in
-                    'Create-Table')
-                      createTable
-                      ;;
-                    'Show-Tables')
+function selectMenu()
+{
+  select selectTable in $selectTables
+    do
+      case $selectTable in
+        'Select-All-Columns')
+          selectAll
+          ;;
+        'Select-specific-Columns')
+          selectSpecificCol
+          ;;
+        'Select-with-Condition')
+          selectWithCond
+          ;;
+        'Sum')
+          sumCol
+          ;;
+        'Count')
+          countRows
+          ;;
+        'Average')
+          averageCol
+          ;;
+        'Quit')
+          cd ../
+          clear
+          useFun
+          break
+          ;;
+        *)
+          echo "incorrect choice... plz, choose again"
+          ;;
+      esac
+    done
+}
 
-                      showTables
-                      ;;
-                    'Select-from-Table')
-                      select selectTable in $selectTables
-                      do
-                        case $selectTable in
-                          'Select-All-Columns')
-                            selectAll
-                            ;;
-                          'Select-specific-Columns')
-                            selectSpecificCol
-                            ;;
-                          'Select-with-Condition')
-                            selectWithCond
-                            ;;
-                          'Sum')
-                            sumCol
-                            ;;
-                          'Count')
-                            countRows
-                            ;;
-                          'Average')
-                            averageCol
-                            ;;
-                          'Quit')
-                            cd ../
+function useFun()
+{
+  select nameTable in $namesTables
+    do
+      case $nameTable in
+        'Create-Table')
+          createTable
+          ;;
+        'Show-Tables')
 
-                            break
-                            ;;
-                          *)
-                            echo "incorrect choice... plz, choose again"
-                            ;;
-                        esac
-                      done
-                      ;;
-                    'Update-Table')
-                      updateTable
-                      ;;
-                    'Delete-from-Table')
+          showTables
+          ;;
+        'Select-from-Table')
+          clear
+          selectMenu
+          ;;
+        'Update-Table')
+          updateTable
+          ;;
+        'Delete-from-Table')
+          Delete-from-Table
+          ;;
+        'Drop-Table')
+          dropTable
+          ;;
+        'Insert-Into-Table')
+          insertIntoTable
+          ;;
+        'Quit')
+          cd ../
+          clear
+          mainMenu
+          break
+          ;;
+        *)
+          echo "incorrect choice... plz, choose again"
+          ;;
+      esac
+    done
+}
 
-                      ;;
-                    'Drop-Table')
-                      dropTable
-                      ;;
-                    'Insert-Into-Table')
-                      insertIntoTable
-                      ;;
-                    'Quit')
-                      cd ../
-
-                      break
-                      ;;
-                  *)
-                       echo "incorrect choice... plz, choose again"
-                     ;;
-                  esac
-                done
-              ;;
-          'Show-Databases')
-               showDB
-               ;;
-          'Quit')
-               break
-               ;;
-          *)
-               echo "incorrect choice... plz, choose again"
-               ;;
-     esac
-done
+function mainMenu()
+{
+  select name in $names
+  do
+    case $name in
+      'Create-Database')
+        createDB
+        ;;
+      'Rename-Database')
+        renameDB
+        ;;
+      'Drop-Database')
+        removeDB
+        ;;
+      'Use-Database')
+        useDB
+        clear
+        useFun
+        ;;
+      'Show-Databases')
+        showDB
+        ;;
+      'Quit')
+        break
+        ;;
+      *)
+        echo "incorrect choice... plz, choose again"
+        ;;
+    esac
+  done
+}
