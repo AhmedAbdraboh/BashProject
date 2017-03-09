@@ -138,16 +138,17 @@ function insertIntoTable(){
   done
 }
 function updateTable(){
-  printf "Enter Table To update: "
+  printf "Update in (Table Name): "
   read tableName
-  printf "Enter identifier: "
-  read identifier
-  printf "Enter value of identifier: "
-  read identifierValue
-  printf "Enter column to change: "
+  printf "Set (column to change): "
   read columnToChange
-  printf "Enter new value: "
-  read newValue 
+  printf "= (New Value): "
+  read newValue
+  printf "Where(Identifier): "
+  read identifier
+  printf "=(Identifier Value): "
+  read identifierValue
+   
 
   columnNumberOfIdentifier=$(getFieldNumber $identifier $tableName)
   columnNumberOfChange=$(getFieldNumber $columnToChange $tableName)
@@ -157,16 +158,14 @@ function updateTable(){
 
 }
 function deleteTable(){
-  printf "Enter Name of table to delete from: "
+  printf "Delete from(Table Name): "
   read tableName
-  printf "Enter identifier: "
+  printf "where (Identifier): "
   read identifier
-  printf "Enter identifierValue: "
+  printf "=(Identifier value): "
   read identifierValue
   columnNumberOfIdentifier=$(getFieldNumber $identifier $tableName)
-  echo $columnNumberOfIdentifier
   rowNumber=$(awk -F':' '{if($'$columnNumberOfIdentifier' == "'$identifierValue'") print NR }' $tableName)
-  echo $rowNumber
   sed -i ''$rowNumber'd' $tableName
 }
 #************************** Select management ********************************
@@ -191,13 +190,13 @@ function selectSpecificCol(){
 
 
 function selectWithCond(){
-  printf "Enter Table Name: "
+  printf "Select From(Table Name): "
   read tableName
-  printf "Enter Column Name: "
+  printf "Where(Column Name): "
   read colName
 
   columnNumber=$(getFieldNumber $colName $tableName)
-  printf "Enter field to select data: "
+  printf "=(value) "
   read condition
   awk -F':' '{if($'$columnNumber'== "'$condition'") print $0 }' $tableName
 }
@@ -215,7 +214,7 @@ function sumCol(){
 function countRows(){
   printf "Enter Table Name:  "
   read tableName
-  awk '{if(NR>2) count++} END {print "count= ",count}' $tableName
+  awk '{if(NR>1) count++} END {print "count= ",count}' $tableName
 }
 
 function averageCol(){
@@ -354,7 +353,7 @@ function useFun()
           updateTable
           ;;
         'Delete-from-Table')
-          Delete-from-Table
+          deleteTable
           ;;
         'Drop-Table')
           dropTable
